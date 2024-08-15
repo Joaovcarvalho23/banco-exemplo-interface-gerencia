@@ -132,8 +132,8 @@ public class Banco implements IGerencia, ICliente {
 
 	@Override
 	public void creditar(ContaAbstrata conta, double valor) throws RepositorioException, ValorInvalidoException {
-		if (valor < 0)
-			throw new ValorInvalidoException();
+//		if (valor < 0)
+//			throw new ValorInvalidoException();
 		conta.creditar(valor);
 	}
 
