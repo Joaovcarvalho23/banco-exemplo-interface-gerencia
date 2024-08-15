@@ -88,6 +88,17 @@ public class TesteBanco {
 		assertEquals(200, conta.getSaldo(), 0);
 	}
 
+	@Test(expected = ValorInvalidoException.class)
+	public void testeCreditarValorNegativo() throws RepositorioException,
+			ContaNaoEncontradaException, InicializacaoSistemaException,
+			ContaJaCadastradaException, ValorInvalidoException {
+
+		ContaAbstrata conta = new Conta("1", 100);
+		banco.cadastrar(conta);
+		banco.creditar(conta, -100);
+		fail("O valor informado eh invalido!");
+	}
+
 	/**
 	 * Verifica a excecao levantada na tentativa de creditar em uma conta que
 	 * nao existe.
