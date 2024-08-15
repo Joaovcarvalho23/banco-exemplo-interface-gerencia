@@ -40,6 +40,7 @@ public class AdminMenuFrame extends JFrame {
 	private JButton removerClienteButton;
 	private JButton removerContaButton;
 	private GridLayout gridLayout;
+	//teste commit com o IntelliJ
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
