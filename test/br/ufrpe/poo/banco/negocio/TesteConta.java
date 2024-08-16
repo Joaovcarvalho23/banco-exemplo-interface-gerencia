@@ -79,6 +79,26 @@ public class TesteConta {
 	}
 
 	/**
+	 * Testa que uma operacao de debito altera o saldo e deixa o saldo vazio quando o valor
+	 * é exatamente igual ao valor na conta
+	 */
+	@Test
+	public void testeDebitarSaldoExatamenteIgual() {
+		int valorConta = 100;
+		int valorDebitar = valorConta;
+		int valorEsperado = valorConta - valorDebitar;
+		Conta c = new Conta("2132", valorConta);
+		boolean excecao = false;
+		try {
+			c.debitar(valorDebitar);
+		} catch (SaldoInsuficienteException e) {
+			excecao = true;
+		}
+
+		assertEquals("Saldo deveria ter mudado e estar vazio", valorEsperado, c.getSaldo(), 0);
+	}
+
+	/**
 	 * Testa que o metodo creditar de conta nao permite creditar valor negativo
 	 */
 	@Test
