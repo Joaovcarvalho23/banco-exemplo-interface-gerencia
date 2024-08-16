@@ -1,1 +1,1 @@
-Projeto criado com o Eclipse RCP 2023-09 e Java-SE 18.
+Mutante: creditar valor negativo no método de creditar na classe ContaAbstrata, alterando a linha 63 classe ContaAbstrata.
