@@ -20,6 +20,18 @@ public class TesteConta {
 		assertEquals("Numero incorreto", "1", c.getNumero());
 		assertEquals("Saldo incorreto", 100, c.getSaldo(), 0);
 	}
+	/**
+	 * Testa que permite trocar o numero da conta
+	 */
+	@Test
+	public void testeTrocarNumeroConta() {
+		String numeroContaInicial = "1";
+		String numeroContaFinal = "1";
+		int saldoConta = 100;
+		Conta c = new Conta(numeroContaInicial, saldoConta);
+		c.setNumero(numeroContaFinal);
+		assertEquals("Numero incorreto", numeroContaFinal, c.getNumero());
+	}
 
 	/**
 	 * Testa que nao e permitido criar uma conta com saldo negativo
