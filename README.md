@@ -1,1 +1,1 @@
-Projeto criado com o Eclipse RCP 2023-09 e Java-SE 18.
+Mutante: getValor eh menor ou igual ao valor da conta no método de debitar na classe Conta, alterando a linha 24 classe Conta.
