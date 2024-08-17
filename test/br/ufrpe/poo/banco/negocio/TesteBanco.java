@@ -238,21 +238,16 @@ public class TesteBanco {
 	 */
 	@Test
 	public void testeRenderBonusContaEspecialExistente() throws RepositorioException, ContaNaoEncontradaException, RenderBonusContaEspecialException, InicializacaoSistemaException, ContaJaCadastradaException {
-		// Criação de mocks para os repositórios
 		RepositorioContasArquivoBin mockRepositorioContas = mock(RepositorioContasArquivoBin.class);
 		Banco banco = new Banco(new RepositorioClientesArquivoBin(), mockRepositorioContas);
 
-		// Criação de uma conta especial
 		ContaAbstrata contaEspecial = new ContaEspecial("12345", 500);
 
-		// Configuração do mock para o repositório de contas
 		when(mockRepositorioContas.existe(contaEspecial.getNumero())).thenReturn(true);
 		Mockito.doNothing().when(mockRepositorioContas).atualizar(contaEspecial);
 
-		// Chamada ao método renderBonus
 		banco.renderBonus(contaEspecial);
 
-		// Verificações
 		verify(mockRepositorioContas, Mockito.times(1)).existe(contaEspecial.getNumero());
 		verify(mockRepositorioContas, Mockito.times(1)).atualizar(contaEspecial);
 		verify((ContaEspecial) contaEspecial, Mockito.times(1)).renderBonus();
@@ -450,7 +445,7 @@ public class TesteBanco {
 
 		Cliente cliente = new Cliente("Carlos", "111222333");
 		when(mockRepositorioClientes.procurar(cliente.getCpf())).thenReturn(cliente);
-		when(mockRepositorioClientes.remover(cliente.getCpf())).thenReturn(false); // Simula falha na remoção
+		when(mockRepositorioClientes.remover(cliente.getCpf())).thenReturn(false);
 
 		try {
 			banco.removerCliente(cliente.getCpf());
