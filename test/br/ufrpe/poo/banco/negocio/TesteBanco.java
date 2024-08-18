@@ -241,16 +241,16 @@ public class TesteBanco {
 		RepositorioContasArquivoBin mockRepositorioContas = mock(RepositorioContasArquivoBin.class);
 		Banco banco = new Banco(new RepositorioClientesArquivoBin(), mockRepositorioContas);
 
-		ContaAbstrata contaEspecial = new ContaEspecial("12345", 500);
+		ContaEspecial mockContaEspecial = mock(ContaEspecial.class);
+		when(mockContaEspecial.getNumero()).thenReturn("12345");
+		when(mockRepositorioContas.existe(mockContaEspecial.getNumero())).thenReturn(true);
+		when(mockRepositorioContas.atualizar(mockContaEspecial)).thenReturn(true);
 
-		when(mockRepositorioContas.existe(contaEspecial.getNumero())).thenReturn(true);
-		Mockito.doNothing().when(mockRepositorioContas).atualizar(contaEspecial);
+		banco.renderBonus(mockContaEspecial);
 
-		banco.renderBonus(contaEspecial);
-
-		verify(mockRepositorioContas, Mockito.times(1)).existe(contaEspecial.getNumero());
-		verify(mockRepositorioContas, Mockito.times(1)).atualizar(contaEspecial);
-		verify((ContaEspecial) contaEspecial, Mockito.times(1)).renderBonus();
+		verify(mockRepositorioContas, Mockito.times(1)).existe(mockContaEspecial.getNumero());
+		verify(mockRepositorioContas, Mockito.times(1)).atualizar(mockContaEspecial);
+		verify(mockContaEspecial, Mockito.times(1)).renderBonus();
 	}
 
 
@@ -391,6 +391,14 @@ public class TesteBanco {
 		assertNull(banco.procurarConta(conta2.getNumero()));
 		assertNull(banco.procurarCliente(cliente.getCpf()));
 	}
+
+	@Test(expected = NullPointerException.class)
+	public void testeRemoverClienteNaoExistente() throws RepositorioException, ClienteNaoCadastradoException,
+			ContaNaoEncontradaException, ClienteNaoPossuiContaException {
+
+		banco.removerCliente("cpfnaoexistente");
+	}
+
 
 	@Test
 	public void testeRemoverClienteComContasAssociadas() throws RepositorioException, ClienteNaoCadastradoException,
