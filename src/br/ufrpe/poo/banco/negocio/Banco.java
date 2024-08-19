@@ -113,7 +113,7 @@ public class Banco implements IGerencia, ICliente {
 		Cliente cliente = this.procurarCliente(cpf);
 		int i = 0;
 		while (!cliente.getContas().isEmpty()) {
-			String numeroConta = cliente.consultarNumeroConta(i);
+			String numeroConta = cliente.consultarNumeroConta(0);
 			i++;
 			this.removerConta(cliente, numeroConta);
 		}

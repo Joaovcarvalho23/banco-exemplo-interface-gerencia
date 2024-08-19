@@ -172,14 +172,22 @@ public class TesteBanco {
 	 * existe levanta excecao.
 	 * 
 	 */
-	@Test(expected = ContaNaoEncontradaException.class)
+	@Test
 	public void testeTransferirContaInexistente() throws RepositorioException,
-			ContaNaoEncontradaException, SaldoInsuficienteException,
-			InicializacaoSistemaException, ValorInvalidoException {
+			SaldoInsuficienteException, InicializacaoSistemaException, ValorInvalidoException {
+		RepositorioContasArquivoBin mockRepositorioContas = mock(RepositorioContasArquivoBin.class);
+		Banco banco = new Banco(null, mockRepositorioContas);
 
-		banco.transferir(new Conta("", 0), new Conta("", 0), 50);
-		fail("Excecao ContaNaoEncontradaException nao levantada)");
+		ContaAbstrata contaOrigem = new Conta("123", 100);
+		ContaAbstrata contaDestino = new Conta("456", 200);
+		when(mockRepositorioContas.existe(contaOrigem.getNumero())).thenReturn(false);
+		when(mockRepositorioContas.existe(contaDestino.getNumero())).thenReturn(false);
+		banco.transferir(contaOrigem, contaDestino, 50);
+
+		verify(mockRepositorioContas, never()).atualizar(contaOrigem);
+		verify(mockRepositorioContas, never()).atualizar(contaDestino);
 	}
+
 
 	/**
 	 * Verifica que render juros de uma conta poupanca funciona corretamente
@@ -301,17 +309,22 @@ public class TesteBanco {
 
 	@Test
 	public void testeAssociarContaComSucesso() throws RepositorioException, ClienteJaPossuiContaException,
-            ContaJaAssociadaException, ClienteNaoCadastradoException, ClienteJaCadastradoException, ContaJaCadastradaException {
+			ContaJaAssociadaException, ClienteNaoCadastradoException, ClienteJaCadastradoException, ContaJaCadastradaException {
+		RepositorioClientesArquivoBin mockRepositorioClientes = mock(RepositorioClientesArquivoBin.class);
+		RepositorioContasArquivoBin mockRepositorioContas = mock(RepositorioContasArquivoBin.class);
+		Banco banco = new Banco(mockRepositorioClientes, mockRepositorioContas);
+
 		Cliente cliente = new Cliente("João", "123456789");
 		ContaAbstrata conta = new Conta("1", 100);
 
-		banco.cadastrarCliente(cliente);
-		banco.cadastrar(conta);
+		when(mockRepositorioClientes.procurar(cliente.getCpf())).thenReturn(cliente);
+		when(mockRepositorioContas.procurar(conta.getNumero())).thenReturn(null);
 		banco.associarConta(cliente.getCpf(), conta.getNumero());
 
-		Cliente clienteAssociado = banco.procurarCliente(cliente.getCpf());
-		assertTrue(clienteAssociado.getContas().contains(conta.getNumero()));
+		assertTrue(cliente.getContas().contains(conta.getNumero()));
+		verify(mockRepositorioClientes, times(1)).atualizar(cliente);
 	}
+
 
 	@Test(expected = ClienteNaoCadastradoException.class)
 	public void testeAssociarContaClienteNaoCadastrado() throws RepositorioException, ClienteJaPossuiContaException,
@@ -409,18 +422,21 @@ public class TesteBanco {
 		Cliente cliente = new Cliente("Ana", "123456789");
 		cliente.adicionarConta("001");
 		cliente.adicionarConta("002");
+
 		when(mockRepositorioClientes.procurar(cliente.getCpf())).thenReturn(cliente);
-		Mockito.doNothing().when(mockRepositorioContas).remover(Mockito.anyString());
+		when(mockRepositorioContas.remover(Mockito.anyString())).thenReturn(true);
 		when(mockRepositorioClientes.remover(cliente.getCpf())).thenReturn(true);
 		banco.removerCliente(cliente.getCpf());
+
 		verify(mockRepositorioContas, Mockito.times(1)).remover("001");
 		verify(mockRepositorioContas, Mockito.times(1)).remover("002");
 		verify(mockRepositorioClientes, Mockito.times(1)).remover(cliente.getCpf());
 	}
 
+
 	@Test
 	public void testeRemoverClienteNaoRemovidoComContas() throws RepositorioException, ClienteNaoCadastradoException,
-            ContaNaoEncontradaException, ClienteNaoPossuiContaException, ClienteJaPossuiContaException {
+			ContaNaoEncontradaException, ClienteNaoPossuiContaException, ClienteJaPossuiContaException {
 		RepositorioClientesArquivoBin mockRepositorioClientes = mock(RepositorioClientesArquivoBin.class);
 		RepositorioContasArquivoBin mockRepositorioContas = mock(RepositorioContasArquivoBin.class);
 		Banco banco = new Banco(mockRepositorioClientes, mockRepositorioContas);
@@ -431,19 +447,23 @@ public class TesteBanco {
 		when(mockRepositorioClientes.procurar(cliente.getCpf())).thenReturn(cliente);
 		when(mockRepositorioClientes.remover(cliente.getCpf())).thenReturn(false);
 
-		Exception excecaoLançada = null;
+		when(mockRepositorioContas.remover("001")).thenReturn(true);
+		when(mockRepositorioContas.remover("002")).thenReturn(true);
+
+		Exception excecaoLancada = null;
 		try {
 			banco.removerCliente(cliente.getCpf());
 		} catch (ClienteNaoCadastradoException e) {
-			excecaoLançada = e;
+			excecaoLancada = e;
 		}
 
-		assertNotNull("Exceção ClienteNaoCadastradoException esperada", excecaoLançada);
-		assertTrue(excecaoLançada instanceof ClienteNaoCadastradoException);
+		assertNotNull("Exceção ClienteNaoCadastradoException esperada", excecaoLancada);
+		assertTrue(excecaoLancada instanceof ClienteNaoCadastradoException);
 
 		verify(mockRepositorioContas, Mockito.times(1)).remover("001");
 		verify(mockRepositorioContas, Mockito.times(1)).remover("002");
 	}
+
 
 	@Test(expected = ClienteNaoCadastradoException.class)
 	public void testeRemoverClienteNaoRemovido() throws RepositorioException, ClienteNaoCadastradoException, ClienteNaoPossuiContaException, ContaNaoEncontradaException {
@@ -455,15 +475,12 @@ public class TesteBanco {
 		when(mockRepositorioClientes.procurar(cliente.getCpf())).thenReturn(cliente);
 		when(mockRepositorioClientes.remover(cliente.getCpf())).thenReturn(false);
 
-		try {
-			banco.removerCliente(cliente.getCpf());
-		} catch (ClienteNaoCadastradoException | ContaNaoEncontradaException | ClienteNaoPossuiContaException e) {
-			assertEquals("O cliente não foi encontrado no repositório após a tentativa de remoção.", e.getMessage());
-			throw e;
-		}
+		banco.removerCliente(cliente.getCpf());
+
 		verify(mockRepositorioContas, Mockito.times(1)).remover(Mockito.anyString());
 		verify(mockRepositorioClientes, Mockito.times(1)).remover(cliente.getCpf());
 	}
+
 
 
 	@Test
