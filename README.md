@@ -1,1 +1,1 @@
-Projeto criado com o Eclipse RCP 2023-09 e Java-SE 18.
+Mutante: Método renderJuros(), na linha 25 da classe Poupanca, o calculo de juros é feito sem a multiplicação da taxa.
