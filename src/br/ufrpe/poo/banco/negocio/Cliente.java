@@ -103,7 +103,7 @@ public class Cliente implements Serializable {
 	 * Remove todos os numeros de contas a associados ao cliente.
 	 */
 	public void removerTodasAsContas() {
-		this.contas = null;
+		this.contas = this.contas;
 	}
 
 	/**
