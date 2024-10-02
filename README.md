@@ -1,1 +1,1 @@
-Projeto criado com o Eclipse RCP 2023-09 e Java-SE 18.
+Mutante: Método remover(), na linha 87 da classe RepositorioContasArray, ele não vai remover a última conta.

@@ -84,7 +84,7 @@ public class RepositorioContasArray implements IRepositorioContas {
 		if (i < this.indice) {
 			this.indice = this.indice - 1;
 			this.contas[i] = this.contas[this.indice];
-			this.contas[this.indice] = null;
+			//this.contas[this.indice] = null;
 			return true;
 		}
 		return false;
