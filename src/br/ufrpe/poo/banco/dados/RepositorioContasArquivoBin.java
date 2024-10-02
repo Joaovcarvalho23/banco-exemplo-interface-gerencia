@@ -131,7 +131,7 @@ public class RepositorioContasArquivoBin implements IRepositorioContas {
 	@Override
 	public boolean remover(String numero) throws RepositorioException {
 		boolean sucesso = contas.remover(numero);
-		if (sucesso) {
+		if (!sucesso) {
 			this.gravarArquivo();
 		}
 		return sucesso;
