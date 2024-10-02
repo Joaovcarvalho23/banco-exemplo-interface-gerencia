@@ -1,1 +1,1 @@
-Projeto criado com o Eclipse RCP 2023-09 e Java-SE 18.
+Mutante: método creditar(), na linha 30 da classe ContaEspecial altera multiplicador de 0.01 para 0.03.
